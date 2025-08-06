@@ -2,289 +2,122 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Wi-Fi Network</title>
+    <title>Login to Wi-Fi Portal</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        :root {
-            --bg-light: #f5f7fa;
-            --bg-dark: #121212;
-            --primary: #4f46e5;
-            --secondary: #7c3aed;
-            --text-light: #f4f4f4;
-            --text-dark: #1a1a1a;
-            --card-bg-light: #ffffff;
-            --card-bg-dark: #1e1e1e;
+        * {
+            box-sizing: border-box;
         }
 
         body {
             margin: 0;
+            padding: 0;
             font-family: 'Segoe UI', sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            transition: background 0.3s, color 0.3s;
-        }
-
-        body.dark-mode {
-            background-color: var(--bg-dark);
-            color: var(--text-light);
-        }
-
-        header {
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            color: white;
-            padding: 25px;
-            text-align: center;
-            position: relative;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-        }
-
-        nav {
+            background: linear-gradient(135deg, #1f1f2e, #2e2e3d);
             display: flex;
             justify-content: center;
-            flex-wrap: wrap;
-            background: #292929;
-            box-shadow: inset 0 -1px 0 #444;
-        }
-
-        nav a {
-            padding: 14px 20px;
+            align-items: center;
+            height: 100vh;
             color: white;
-            text-decoration: none;
-            transition: background 0.3s;
         }
 
-        nav a:hover,
-        nav a.active {
-            background-color: #444;
-            border-bottom: 2px solid var(--secondary);
+        .login-box {
+            background: #2b2b3c;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            max-width: 350px;
+            text-align: center;
         }
 
-        .toggle-wrap {
-            position: absolute;
-            top: 25px;
-            right: 25px;
+        .login-box h2 {
+            margin-bottom: 25px;
+            font-weight: normal;
+            color: #f4f4f4;
         }
 
-        .slider {
-            width: 50px;
-            height: 24px;
-            background-color: #ccc;
-            border-radius: 24px;
-            position: relative;
-            cursor: pointer;
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
         }
 
-        .slider::before {
-            content: "";
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background-color: white;
-            top: 2px;
-            left: 2px;
-            border-radius: 50%;
-            transition: 0.3s;
-        }
-
-        input[type="checkbox"] {
-            display: none;
-        }
-
-        input[type="checkbox"]:checked + .slider {
-            background-color: #666;
-        }
-
-        input[type="checkbox"]:checked + .slider::before {
-            transform: translateX(26px);
-        }
-
-        .content {
-            max-width: 900px;
-            margin: auto;
-            padding: 30px 20px;
-        }
-
-        .card {
-            background-color: var(--card-bg-light);
-            padding: 20px;
-            margin-bottom: 30px;
-            border-radius: 10px;
-            box-shadow: 0 6px 10px rgba(0,0,0,0.08);
-            transition: background 0.3s;
-        }
-
-        body.dark-mode .card {
-            background-color: var(--card-bg-dark);
-        }
-
-        .tab-content {
-            display: none;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-
-        .tab-content.active {
+        .input-group label {
             display: block;
-            opacity: 1;
+            margin-bottom: 6px;
+            color: #ccc;
         }
 
-        form input, form textarea {
+        .input-group input {
             width: 100%;
             padding: 10px;
-            border: 1px solid #aaa;
-            border-radius: 6px;
-            margin-top: 8px;
-            margin-bottom: 15px;
-            font-size: 15px;
-        }
-
-        form button {
-            background-color: var(--primary);
             border: none;
+            border-radius: 8px;
+            background: #3a3a4f;
             color: white;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
             font-size: 16px;
         }
 
-        form button:hover {
-            background-color: var(--secondary);
+        .input-group input:focus {
+            outline: 2px solid #6c63ff;
         }
 
-        footer {
-            text-align: center;
-            padding: 15px;
-            background-color: #222;
-            color: #bbb;
-            font-size: 14px;
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #6c63ff;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
         }
 
-        @media (max-width: 600px) {
-            nav a {
-                padding: 10px;
-                font-size: 14px;
-            }
+        .login-btn:hover {
+            background: #5a52e8;
+        }
+
+        .note {
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #888;
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Welcome to Our Wi-Fi, its kinda bad and sometimes cuts out!</h1>
-        <div class="toggle-wrap">
-            <label>
-                <input type="checkbox" id="darkModeToggle">
-                <div class="slider"></div>
-            </label>
-        </div>
-    </header>
 
-    <nav>
-        <a href="#" onclick="showTab('wifipass', this)">Our wifi password</a>
-        <a href="#" onclick="showTab('home', this)" class="active">Home</a>
-        <a href="#" onclick="showTab('rules', this)">Internet Rules</a>
-        <a href="#" onclick="showTab('contact', this)">Contact Admin</a>
-        <a href="#" onclick="showTab('help', this)">Help</a>
-        <a href="#" onclick="showTab('steam', this)">Why is there Steam games on the home page????</a>
-
-    </nav>
-
-    <div class="content">
-         <div id="wifipass" class="tab-content card">
-    <h2>Our Wi-Fi Password</h2>
-    <p style="font-size: 1.5rem; background: #eee; padding: 10px 20px; border-radius: 8px; display: inline-block; color: #333;">
-        🔐 <strong>GZfYZPJdtKmTCvmc</strong>
-    </p>
-    <p style="margin-top: 10px; font-style: italic;">(Click to copy coming soon...)</p>
-</div>
-
-         <div id="steam" class="tab-content card">
-    <h2>Why is there Steam games on the home page????</h2>
-    <p> These are <strong>works of art</strong> games — beautifully crafted, meaningful, and fun.</p>
-    <p> We highly recommend supporting the devs and buying them 101%!</p>
-    <p> Steam is not just a store... it's a culture. </p>
-</div>
-
-        <div id="home" class="tab-content active card">
-            <h2>Home</h2>
-            <p>Thanks for mining bitcoin on our wifi! Enjoy fast, secure, and omega skibidi chill wifi browsing lol.</p>
-            <blockquote style="margin-top:20px; font-style: italic;"> "The internet is a tool for connection — use it alot and abuse it please."</blockquote>
-        </div>
-
-        <div id="rules" class="tab-content card">
-            <h2>Internet Rules</h2>
-            <ul style="text-align:left; padding-left: 20px;">
-                <li> No illegal downloads or streaming</li>
-                <li> Respect privacy of others</li>
-                <li> Don't hog bandwidth — share the net</li>
-                <li> Use common sense and be respectful</li>
-            </ul>
-        </div>
-
-        <div id="contact" class="tab-content card">
-            <h2>Contact Admin</h2>
-            <p>Need help? Just drop a message below or reach out to me?????.</p>
-            <form>
-                <label>Name</label>
-                <input type="text" placeholder="Your name">
-                <label>Message</label>
-                <textarea rows="4" placeholder="What's on your mind?"></textarea>
-                <button type="submit">Send</button>
-            </form>
-            <p style="margin-top: 15px;">
-                Or contact directly:<br>
-                 <a href="mailto:halley.maximiliam12@gmail.com">halley.maximiliam12@gmail.com</a><br>
-                 <a href="tel:+358406754026">+358 40 6754026</a>
-            </p>
-        </div>
-
-        <div id="help" class="tab-content card">
-            <h2>Help</h2>
-            <p>Problems? Try these first:</p>
-            <ul style="text-align:left; padding-left: 20px;">
-                <li> Restart your device cause it prob has virus</li>
-                <li> Forget and reconnect to the Wi-Fi cause our pass is annoying</li>
-                <li> Check if aeroplane mode is on, yes its areoplane mode</li>
-                <li> Still stuck trying to figure out this shit wifi? Contact me NOW!!</li>
-            </ul>
-        </div>
+    <div class="login-box">
+        <h2>Login to the Network</h2>
+        <form onsubmit="return login(event)">
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required>
+            </div>
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+        <div class="note">Access restricted to authorized users only.</div>
     </div>
 
-    <footer>
-        &copy; 2025 Your Network | Contact: halley.maximiliam12@gmail.com | +358 40 6754026
-    </footer>
-
     <script>
-        function showTab(tabId, link) {
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.getElementById(tabId).classList.add('active');
+        function login(event) {
+            event.preventDefault();
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
 
-            document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
-            if (link) link.classList.add('active');
+            // Example dummy login (replace with real validation later)
+            if (user === "admin" && pass === "wifi123") {
+                alert("Login successful!");
+                // You can redirect here: window.location.href = "home.html";
+            } else {
+                alert("Invalid username or password.");
+            }
         }
-
-        const toggle = document.getElementById('darkModeToggle');
-        const body = document.body;
-
-        // Remember dark mode preference
-        if (localStorage.getItem("dark-mode") === "true") {
-            body.classList.add("dark-mode");
-            toggle.checked = true;
-        }
-
-        toggle.addEventListener('change', function () {
-            body.classList.toggle('dark-mode', this.checked);
-            localStorage.setItem("dark-mode", this.checked);
-        });
     </script>
 
-    <iframe src="https://store.steampowered.com/widget/1932250/" frameborder="0" width="646" height="190"></iframe>
-     <iframe src="https://store.steampowered.com/widget/3527290/" frameborder="0" width="646" height="190"></iframe>
-     <iframe src="https://store.steampowered.com/widget/1458140/" frameborder="0" width="646" height="190"></iframe>
-     <iframe src="https://store.steampowered.com/widget/252490/" frameborder="0" width="646" height="190"></iframe>
-     <iframe src="https://store.steampowered.com/widget/1205450/" frameborder="0" width="646" height="190"></iframe>
-     <iframe src="https://store.steampowered.com/widget/1533390/" frameborder="0" width="646" height="190"></iframe>
 </body>
 </html>
