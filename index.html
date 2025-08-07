@@ -1,125 +1,260 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
   <meta charset="UTF-8" />
-  <title>WiFi Login</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>N4S — Notes for Success</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
+    /* Reset & base */
     * {
       box-sizing: border-box;
     }
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #111;
-      color: #eee;
+    body, html {
+      margin: 0; padding: 0;
+      height: 100%;
+      font-family: 'Roboto', Arial, sans-serif;
+      background: #f5f7fa;
+      color: #202124;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
     }
-    .container, .menu {
-      background: #1f1f1f;
-      padding: 40px 30px;
+
+    /* Login Screen */
+    #login-screen {
+      background: white;
+      padding: 40px 48px;
       border-radius: 12px;
-      box-shadow: 0 0 20px rgba(123, 97, 255, 0.3);
-      width: 100%;
-      max-width: 360px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      width: 360px;
       text-align: center;
     }
-    h1 {
-      margin-bottom: 25px;
+    #login-screen h1 {
+      font-weight: 700;
       font-size: 28px;
-      color: #b794f4;
+      margin-bottom: 24px;
+      color: #1a73e8;
+      letter-spacing: 1.5px;
     }
-    input {
+    input[type=email], input[type=password] {
       width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      border: none;
-      border-radius: 8px;
-      background: #2e2e2e;
-      color: #eee;
-      font-size: 15px;
-    }
-    button {
-      width: 48%;
-      padding: 12px;
-      margin: 10px 1%;
-      border: none;
-      border-radius: 8px;
-      background: #7c3aed;
-      color: white;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    button:hover {
-      background: #a78bfa;
-    }
-    #message {
-      margin-top: 15px;
-      color: #f87171;
-      font-size: 14px;
-      min-height: 20px;
-    }
-    .hidden {
-      display: none;
-    }
-    .menu h2 {
-      color: #93c5fd;
-    }
-    .menu ul {
-      list-style: none;
-      padding: 0;
-      margin: 20px 0;
-    }
-    .menu li {
-      background: #2a2a2a;
-      padding: 12px;
-      margin: 10px 0;
+      padding: 14px 16px;
+      margin: 10px 0 20px;
+      border: 1.8px solid #dadce0;
       border-radius: 8px;
       font-size: 16px;
+      transition: border-color 0.3s ease;
     }
-    .logout-btn {
-      margin-top: 20px;
-      background: #ef4444;
+    input[type=email]:focus, input[type=password]:focus {
+      outline: none;
+      border-color: #1a73e8;
+      box-shadow: 0 0 5px rgba(26,115,232,0.5);
+    }
+    button {
+      background: #1a73e8;
+      border: none;
+      color: white;
+      font-weight: 700;
+      font-size: 16px;
+      padding: 14px 0;
+      width: 100%;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #155ab6;
+    }
+    #message {
+      margin-top: 12px;
+      height: 20px;
+      font-size: 14px;
+      color: #d93025; /* red */
+    }
+
+    /* Main Menu */
+    #main-menu {
+      width: 100vw;
+      height: 100vh;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      padding: 24px 48px;
+    }
+    #main-menu header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #e0e0e0;
+      padding-bottom: 12px;
+      margin-bottom: 24px;
+    }
+    #main-menu header h1 {
+      font-weight: 700;
+      font-size: 28px;
+      color: #1a73e8;
+      letter-spacing: 1.5px;
+      user-select: none;
+    }
+    #main-menu header button {
+      width: auto;
+      padding: 8px 18px;
+      font-weight: 600;
+      background: #d93025;
+      border-radius: 8px;
+    }
+    #notes-list {
+      flex-grow: 1;
+      overflow-y: auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .note-card {
+      background: #f1f3f4;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 5px rgba(60,64,67,.1);
+      cursor: pointer;
+      transition: box-shadow 0.2s ease;
+    }
+    .note-card:hover {
+      box-shadow: 0 6px 15px rgba(26,115,232,0.3);
+    }
+    .note-title {
+      font-weight: 700;
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: #202124;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .note-preview {
+      font-size: 14px;
+      color: #5f6368;
+      height: 40px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Note Editor Modal */
+    #note-editor-modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(32, 33, 36, 0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
+    #note-editor {
+      background: white;
+      width: 500px;
+      max-width: 95vw;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      display: flex;
+      flex-direction: column;
+    }
+    #note-editor input[type=text] {
+      font-size: 20px;
+      font-weight: 700;
+      border: none;
+      border-bottom: 2px solid #1a73e8;
+      margin-bottom: 16px;
+      padding: 8px 4px;
+      outline: none;
+      color: #202124;
+    }
+    #note-editor textarea {
+      flex-grow: 1;
+      resize: vertical;
+      font-size: 16px;
+      border: 1.5px solid #dadce0;
+      border-radius: 8px;
+      padding: 12px;
+      color: #202124;
+      font-family: inherit;
+      min-height: 150px;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+    #note-editor textarea:focus {
+      border-color: #1a73e8;
+      box-shadow: 0 0 5px rgba(26,115,232,0.4);
+    }
+    #note-editor .actions {
+      margin-top: 16px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+    #note-editor button {
+      padding: 10px 18px;
+      font-weight: 700;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    #save-note {
+      background: #1a73e8;
+      color: white;
+    }
+    #save-note:hover {
+      background: #155ab6;
+    }
+    #cancel-note {
+      background: #e8eaed;
+      color: #3c4043;
+    }
+    #cancel-note:hover {
+      background: #dadce0;
     }
   </style>
-
-  <!-- Firebase SDKs -->
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
-  <!-- Login Container -->
-  <div class="container" id="login-screen">
-    <h1>Welcome</h1>
-    <input id="email" type="email" placeholder="Email" />
-    <input id="password" type="password" placeholder="Password" />
-    <div>
-      <button onclick="login()">Login</button>
-      <button onclick="signup()">Sign Up</button>
-    </div>
-    <p id="message"></p>
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen">
+    <h1>N4S Login</h1>
+    <input id="email" type="email" placeholder="Email address" autocomplete="username" />
+    <input id="password" type="password" placeholder="Password" autocomplete="current-password" />
+    <button id="login-btn">Log In</button>
+    <button id="signup-btn" style="margin-top:8px; background:#34a853;">Sign Up</button>
+    <p id="login-message"></p>
   </div>
 
-  <!-- Main Menu -->
-  <div class="menu hidden" id="main-menu">
-    <h1>Main Menu</h1>
-    <h2>Hello 👋</h2>
-    <ul>
-      <li>💡 Internet Rules</li>
-      <li>🎮 Recommended Games</li>
-      <li>📞 Contact Admin</li>
-      <li>❓ Help & Info</li>
-    </ul>
-    <button class="logout-btn" onclick="logout()">Log Out</button>
+  <!-- MAIN MENU -->
+  <div id="main-menu" style="display:none;">
+    <header>
+      <h1>N4S</h1>
+      <button id="logout-btn">Log Out</button>
+    </header>
+    <section id="notes-list"></section>
+    <button id="new-note-btn" style="margin-top: 20px; width: 200px; font-weight: 700; padding: 14px; border-radius: 8px; border:none; cursor:pointer; background:#1a73e8; color:white; transition:background 0.3s;">+ New Note</button>
+  </div>
+
+  <!-- NOTE EDITOR MODAL -->
+  <div id="note-editor-modal">
+    <div id="note-editor">
+      <input type="text" id="note-title" placeholder="Note Title" />
+      <textarea id="note-content" placeholder="Write your note here..."></textarea>
+      <div class="actions">
+        <button id="cancel-note">Cancel</button>
+        <button id="save-note">Save</button>
+      </div>
+    </div>
   </div>
 
   <script>
+    // Firebase config (your project)
     const firebaseConfig = {
       apiKey: "AIzaSyB7FM1PA0TwtBuHjnXDXVUOkZUnfU1dw3M",
       authDomain: "website-54b55.firebaseapp.com",
@@ -129,55 +264,171 @@
       appId: "1:1077740411110:web:2c1d382199cbb445108327",
       measurementId: "G-JQSBZY3CH8"
     };
+
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
+    const db = firebase.firestore();
 
-    function showMessage(msg, isError = false) {
-      const el = document.getElementById("message");
-      el.style.color = isError ? "#f87171" : "#facc15";
-      el.innerText = msg;
+    // UI Elements
+    const loginScreen = document.getElementById('login-screen');
+    const mainMenu = document.getElementById('main-menu');
+    const loginMessage = document.getElementById('login-message');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const loginBtn = document.getElementById('login-btn');
+    const signupBtn = document.getElementById('signup-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+    const notesList = document.getElementById('notes-list');
+    const newNoteBtn = document.getElementById('new-note-btn');
+
+    const noteEditorModal = document.getElementById('note-editor-modal');
+    const noteTitleInput = document.getElementById('note-title');
+    const noteContentInput = document.getElementById('note-content');
+    const cancelNoteBtn = document.getElementById('cancel-note');
+    const saveNoteBtn = document.getElementById('save-note');
+
+    let editingNoteId = null;
+
+    // Show messages
+    function showLoginMessage(msg, isError = true) {
+      loginMessage.style.color = isError ? '#d93025' : '#1a73e8';
+      loginMessage.textContent = msg;
     }
 
-    function login() {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-      if (!email || !password) return showMessage("Fill in all fields", true);
-      auth.signInWithEmailAndPassword(email, password)
-        .then(() => {
-          showMenu();
-        })
-        .catch(err => showMessage(err.message, true));
-    }
+    // Login and Signup
+    loginBtn.onclick = () => {
+      const email = emailInput.value.trim();
+      const pass = passwordInput.value.trim();
+      if (!email || !pass) return showLoginMessage("Please fill all fields");
+      auth.signInWithEmailAndPassword(email, pass)
+        .catch(e => showLoginMessage(e.message));
+    };
+    signupBtn.onclick = () => {
+      const email = emailInput.value.trim();
+      const pass = passwordInput.value.trim();
+      if (!email || !pass) return showLoginMessage("Please fill all fields");
+      auth.createUserWithEmailAndPassword(email, pass)
+        .catch(e => showLoginMessage(e.message));
+    };
 
-    function signup() {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-      if (!email || !password) return showMessage("Fill in all fields", true);
-      auth.createUserWithEmailAndPassword(email, password)
-        .then(() => {
-          showMenu();
-        })
-        .catch(err => showMessage(err.message, true));
-    }
+    // Logout
+    logoutBtn.onclick = () => {
+      auth.signOut();
+    };
 
-    function showMenu() {
-      document.getElementById("login-screen").classList.add("hidden");
-      document.getElementById("main-menu").classList.remove("hidden");
-    }
-
-    function logout() {
-      auth.signOut().then(() => {
-        document.getElementById("main-menu").classList.add("hidden");
-        document.getElementById("login-screen").classList.remove("hidden");
-        document.getElementById("email").value = "";
-        document.getElementById("password").value = "";
-        document.getElementById("message").innerText = "";
-      });
-    }
-
+    // Show/hide screens based on auth state
     auth.onAuthStateChanged(user => {
-      if (user) showMenu();
+      if (user) {
+        loginScreen.style.display = 'none';
+        mainMenu.style.display = 'flex';
+        loadNotes();
+      } else {
+        loginScreen.style.display = 'block';
+        mainMenu.style.display = 'none';
+        loginMessage.textContent = '';
+        emailInput.value = '';
+        passwordInput.value = '';
+      }
     });
+
+    // Load notes from Firestore for current user
+    function loadNotes() {
+      notesList.innerHTML = '<p style="color:#5f6368; text-align:center; margin-top:20px;">Loading notes...</p>';
+      const user = auth.currentUser;
+      if (!user) return;
+      db.collection('notes')
+        .where('uid', '==', user.uid)
+        .orderBy('updatedAt', 'desc')
+        .onSnapshot(snapshot => {
+          if (snapshot.empty) {
+            notesList.innerHTML = '<p style="color:#5f6368; text-align:center; margin-top:20px;">No notes yet. Click "+ New Note" to create one!</p>';
+            return;
+          }
+          notesList.innerHTML = '';
+          snapshot.forEach(doc => {
+            const note = doc.data();
+            const card = document.createElement('div');
+            card.className = 'note-card';
+            card.dataset.id = doc.id;
+
+            const title = document.createElement('div');
+            title.className = 'note-title';
+            title.textContent = note.title || '(Untitled)';
+
+            const preview = document.createElement('div');
+            preview.className = 'note-preview';
+            preview.textContent = note.content ? note.content.slice(0, 80).replace(/\n/g, ' ') + (note.content.length > 80 ? '...' : '') : '(No content)';
+
+            card.appendChild(title);
+            card.appendChild(preview);
+
+            card.onclick = () => openNoteEditor(doc.id, note);
+
+            notesList.appendChild(card);
+          });
+        });
+    }
+
+    // Open note editor modal for new or existing note
+    function openNoteEditor(id = null, note = {title:'', content:''}) {
+      editingNoteId = id;
+      noteTitleInput.value = note.title || '';
+      noteContentInput.value = note.content || '';
+      noteEditorModal.style.display = 'flex';
+      noteTitleInput.focus();
+    }
+
+    // Close editor
+    function closeNoteEditor() {
+      editingNoteId = null;
+      noteEditorModal.style.display = 'none';
+      noteTitleInput.value = '';
+      noteContentInput.value = '';
+    }
+
+    // Save note (create or update)
+    saveNoteBtn.onclick = () => {
+      const title = noteTitleInput.value.trim();
+      const content = noteContentInput.value.trim();
+      const user = auth.currentUser;
+      if (!user) return alert('User not logged in');
+
+      if (!title && !content) {
+        alert('Cannot save empty note');
+        return;
+      }
+
+      if (editingNoteId) {
+        // Update existing note
+        db.collection('notes').doc(editingNoteId).update({
+          title,
+          content,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+          closeNoteEditor();
+        }).catch(e => alert(e.message));
+      } else {
+        // Create new note
+        db.collection('notes').add({
+          uid: user.uid,
+          title,
+          content,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+          closeNoteEditor();
+        }).catch(e => alert(e.message));
+      }
+    };
+
+    cancelNoteBtn.onclick = closeNoteEditor;
+    newNoteBtn.onclick = () => openNoteEditor();
+
+    // Close modal on outside click
+    noteEditorModal.onclick = e => {
+      if (e.target === noteEditorModal) closeNoteEditor();
+    };
   </script>
+
 </body>
 </html>
