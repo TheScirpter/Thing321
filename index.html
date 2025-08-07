@@ -3,12 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>N4S - Notes for Success</title>
+  <title>N4S - Fullscreen Notes</title>
   <script type="module">
-    // Firebase import via CDN (v9 modular)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, doc, getDocs, setDoc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, doc, getDocs, setDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB7FM1PA0TwtBuHjnXDXVUOkZUnfU1dw3M",
@@ -24,60 +23,72 @@
     const auth = getAuth();
     const db = getFirestore();
 
-    const loginForm = document.getElementById('login-form');
-    const appContainer = document.getElementById('app');
-    const notesList = document.getElementById('notes-list');
-    const noteContent = document.getElementById('note-content');
-    const addNoteBtn = document.getElementById('add-note-btn');
-    const logoutBtn = document.getElementById('logout-btn');
-    const userEmailDisplay = document.getElementById('user-email');
-
     let currentUser = null;
     let currentNoteId = null;
 
-    onAuthStateChanged(auth, user => {
+    const loginForm = document.getElementById("login-form");
+    const mainApp = document.getElementById("app");
+    const notesList = document.getElementById("notes-list");
+    const noteTitle = document.getElementById("note-title");
+    const noteContent = document.getElementById("note-content");
+    const userEmailDisplay = document.getElementById("user-email");
+
+    onAuthStateChanged(auth, (user) => {
       if (user) {
         currentUser = user;
-        loginForm.style.display = 'none';
-        appContainer.style.display = 'flex';
+        loginForm.style.display = "none";
+        mainApp.style.display = "flex";
         userEmailDisplay.textContent = user.email;
         loadNotes();
       } else {
-        loginForm.style.display = 'block';
-        appContainer.style.display = 'none';
+        loginForm.style.display = "flex";
+        mainApp.style.display = "none";
       }
     });
 
-    document.getElementById('signup-btn').addEventListener('click', async () => {
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
+    document.getElementById("signup-btn").addEventListener("click", async () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
       await createUserWithEmailAndPassword(auth, email, password);
     });
 
-    document.getElementById('login-btn').addEventListener('click', async () => {
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
+    document.getElementById("login-btn").addEventListener("click", async () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
       await signInWithEmailAndPassword(auth, email, password);
     });
 
-    logoutBtn.addEventListener('click', () => {
+    document.getElementById("logout-btn").addEventListener("click", () => {
       signOut(auth);
     });
 
-    addNoteBtn.addEventListener('click', async () => {
+    document.getElementById("add-note-btn").addEventListener("click", async () => {
       const docRef = await addDoc(collection(db, "users", currentUser.uid, "notes"), {
-        content: "New note..."
+        title: "Untitled Note",
+        content: ""
       });
       currentNoteId = docRef.id;
-      noteContent.value = "New note...";
+      noteTitle.value = "Untitled Note";
+      noteContent.value = "";
       loadNotes();
     });
 
-    noteContent.addEventListener('input', async () => {
+    noteContent.addEventListener("input", async () => {
       if (currentNoteId) {
         await setDoc(doc(db, "users", currentUser.uid, "notes", currentNoteId), {
+          title: noteTitle.value,
           content: noteContent.value
         });
+      }
+    });
+
+    noteTitle.addEventListener("input", async () => {
+      if (currentNoteId) {
+        await setDoc(doc(db, "users", currentUser.uid, "notes", currentNoteId), {
+          title: noteTitle.value,
+          content: noteContent.value
+        });
+        loadNotes();
       }
     });
 
@@ -85,107 +96,119 @@
       notesList.innerHTML = "";
       const q = query(collection(db, "users", currentUser.uid, "notes"));
       const querySnapshot = await getDocs(q);
-      querySnapshot.forEach(docSnap => {
-        const li = document.createElement('li');
-        li.textContent = docSnap.data().content.substring(0, 20) || 'Untitled Note';
+      querySnapshot.forEach((docSnap) => {
+        const noteData = docSnap.data();
+        const li = document.createElement("li");
+        li.textContent = noteData.title || "Untitled Note";
         li.onclick = () => {
           currentNoteId = docSnap.id;
-          noteContent.value = docSnap.data().content;
+          noteTitle.value = noteData.title || "";
+          noteContent.value = noteData.content || "";
         };
         notesList.appendChild(li);
       });
     }
   </script>
   <style>
-    body {
+    * {
+      box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #f4f4f4;
     }
-    #login-form, #app {
-      max-width: 1000px;
-      margin: 2rem auto;
-      padding: 2rem;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    #login-form {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #222;
+      color: white;
     }
-    #login-form input {
-      display: block;
-      margin: 0.5rem 0;
+    #login-form input, #login-form button {
+      margin: 0.5rem;
       padding: 0.5rem;
-      width: 100%;
       font-size: 1rem;
-    }
-    #login-form button {
-      padding: 0.5rem 1rem;
-      margin-top: 1rem;
-      font-size: 1rem;
-      cursor: pointer;
+      width: 250px;
     }
     #app {
       display: none;
-      flex-direction: row;
-      gap: 1rem;
+      height: 100vh;
+      width: 100vw;
+    }
+    #sidebar {
+      width: 250px;
+      background: #f4f4f4;
+      padding: 1rem;
+      overflow-y: auto;
+      border-right: 1px solid #ccc;
     }
     #notes-list {
-      width: 30%;
-      background: #eee;
       list-style: none;
       padding: 0;
-      border-radius: 6px;
-      overflow-y: auto;
-      height: 400px;
+      margin: 0;
     }
     #notes-list li {
       padding: 0.5rem;
-      border-bottom: 1px solid #ccc;
+      border-bottom: 1px solid #ddd;
       cursor: pointer;
     }
     #notes-list li:hover {
       background: #ddd;
     }
-    #note-editor {
+    #main {
       flex: 1;
       display: flex;
       flex-direction: column;
+      padding: 1rem;
+    }
+    #note-title {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      padding: 0.5rem;
+      width: 100%;
     }
     #note-content {
-      width: 100%;
-      height: 400px;
-      padding: 1rem;
+      flex: 1;
       font-size: 1rem;
+      padding: 1rem;
+      width: 100%;
+      resize: none;
     }
     #toolbar {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       margin-bottom: 1rem;
+    }
+    button {
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-
-<div id="login-form">
-  <h2>Login or Sign Up to N4S</h2>
-  <input type="email" id="email" placeholder="Email" />
-  <input type="password" id="password" placeholder="Password" />
-  <button id="login-btn">Login</button>
-  <button id="signup-btn">Sign Up</button>
-</div>
-
-<div id="app">
-  <ul id="notes-list"></ul>
-  <div id="note-editor">
-    <div id="toolbar">
-      <button id="add-note-btn">+ New Note</button>
-      <div>
-        <span id="user-email"></span>
-        <button id="logout-btn">Logout</button>
-      </div>
-    </div>
-    <textarea id="note-content" placeholder="Start typing..."></textarea>
+  <div id="login-form">
+    <h2>Welcome to N4S</h2>
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <button id="login-btn">Login</button>
+    <button id="signup-btn">Sign Up</button>
   </div>
-</div>
 
+  <div id="app">
+    <div id="sidebar">
+      <button id="add-note-btn">+ New Note</button>
+      <ul id="notes-list"></ul>
+    </div>
+    <div id="main">
+      <div id="toolbar">
+        <input type="text" id="note-title" placeholder="Note Title..." />
+        <div><span id="user-email"></span> <button id="logout-btn">Logout</button></div>
+      </div>
+      <textarea id="note-content" placeholder="Write your note here..."></textarea>
+    </div>
+  </div>
 </body>
 </html>
