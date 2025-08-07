@@ -3,278 +3,341 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>N4S - Notes for Success</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <title>N4S - Notes App</title>
   <style>
-    :root {
-      --bg: #ffffff;
-      --text: #121212;
-      --accent: #3b82f6;
-      --sidebar-bg: #f1f1f1;
-      --note-bg: #fff;
-    }
-    .dark {
-      --bg: #121212;
-      --text: #eaeaea;
-      --accent: #60a5fa;
-      --sidebar-bg: #1e1e1e;
-      --note-bg: #1a1a1a;
-    }
-
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--text);
       display: flex;
-      flex-direction: column;
+      height: 100vh;
+      background: #f4f4f4;
+      transition: background 0.3s, color 0.3s;
+    }
+    body.dark {
+      background: #121212;
+      color: #fff;
+    }
+
+    .hidden { display: none; }
+
+    #login-screen, #app {
+      margin: auto;
+      max-width: 900px;
+      width: 100%;
+      padding: 20px;
+    }
+
+    #login-screen {
+      text-align: center;
+      background: white;
+      border-radius: 10px;
+      padding: 40px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    input {
+      padding: 10px;
+      margin: 10px;
+      width: 250px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin-top: 10px;
+      background: #6366f1;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #app {
+      display: flex;
       height: 100vh;
     }
 
-    header {
-      padding: 1rem 2rem;
-      background: var(--accent);
-      color: white;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    #main {
-      display: flex;
-      flex: 1;
-    }
-
     #sidebar {
-      width: 240px;
-      background: var(--sidebar-bg);
-      padding: 1rem;
-      border-right: 1px solid #ccc;
+      width: 200px;
+      background: #e5e5e5;
+      padding: 10px;
       overflow-y: auto;
     }
-
-    #notes-list button {
-      display: block;
-      width: 100%;
-      background: none;
-      border: none;
-      text-align: left;
-      padding: 8px;
-      margin-bottom: 5px;
-      cursor: pointer;
-      color: var(--text);
+    body.dark #sidebar {
+      background: #1f1f1f;
     }
 
     #editor {
       flex: 1;
-      padding: 2rem;
+      padding: 20px;
       display: flex;
       flex-direction: column;
     }
 
-    textarea {
+    #toolbar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    textarea, input[type='text'] {
       width: 100%;
-      height: 400px;
-      resize: none;
-      padding: 1rem;
-      font-size: 1rem;
-      background: var(--note-bg);
-      color: var(--text);
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      margin-bottom: 1rem;
+      padding: 10px;
+      margin-bottom: 10px;
+      resize: vertical;
+      font-size: 16px;
     }
 
-    .controls {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 1rem;
+    .note-item {
+      padding: 8px;
+      margin: 4px 0;
+      background: #fff;
+      border-radius: 4px;
+      cursor: pointer;
     }
 
-    select, input[type=\"color\"] {
-      padding: 6px;
-      font-size: 1rem;
+    .note-item.selected {
+      background: #c7d2fe;
     }
 
-    #login-screen {
-      position: absolute;
-      inset: 0;
-      background: var(--bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .login-box {
-      background: var(--note-bg);
-      padding: 40px;
-      border-radius: 10px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    #rightbar {
+      width: 180px;
+      padding: 10px;
+      background: #f3f3f3;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      width: 300px;
     }
 
-    .login-box input, .login-box button {
-      padding: 12px;
-      font-size: 1rem;
-      border-radius: 6px;
-      border: 1px solid #ccc;
+    body.dark #rightbar {
+      background: #1e1e1e;
     }
 
-    .login-box button {
-      background: var(--accent);
-      color: white;
-      border: none;
-      cursor: pointer;
+    #dark-mode-toggle {
+      margin-top: auto;
+      background: #111;
     }
 
-    .toggle-dark {
-      background: transparent;
-      border: none;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
+    label {
+      font-size: 14px;
+      margin-top: 10px;
     }
+
+    #status {
+      font-size: 12px;
+      color: #888;
+    }
+
   </style>
 </head>
 <body>
   <div id="login-screen">
-    <div class="login-box">
-      <h2>N4S Login</h2>
-      <input type="email" id="email" placeholder="Email" />
-      <input type="password" id="password" placeholder="Password" />
-      <button onclick="login()">Login</button>
-      <button onclick="signup()">Sign Up</button>
-      <p id="login-message"></p>
+    <h2>Welcome to N4S</h2>
+    <input id="email" type="email" placeholder="Email" />
+    <input id="password" type="password" placeholder="Password" />
+    <div>
+      <button id="login-btn">Login / Sign Up</button>
     </div>
+    <div id="login-error" style="color: red;"></div>
   </div>
 
-  <header>
-    <h1>N4S</h1>
-    <div>
-      <button class="toggle-dark" onclick="toggleDarkMode()">Toggle Dark Mode</button>
-      <button onclick="logout()">Logout</button>
-    </div>
-  </header>
-
-  <div id="main">
+  <div id="app" class="hidden">
     <div id="sidebar">
-      <button onclick="createNote()">+ New Note</button>
+      <button id="add-note">+ New Note</button>
       <div id="notes-list"></div>
+      <button id="logout">Logout</button>
     </div>
     <div id="editor">
-      <div class="controls">
-        <select id="font-size" onchange="updateStyle()">
-          <option value=\"1rem\">Small</option>
-          <option value=\"1.25rem\" selected>Medium</option>
-          <option value=\"1.5rem\">Large</option>
-        </select>
-        <input type=\"color\" id=\"font-color\" onchange=\"updateStyle()\" />
-      </div>
-      <textarea id=\"note-content\" oninput=\"saveNote()\"></textarea>
+      <input type="text" id="note-title" placeholder="Note Title" />
+      <textarea id="note-content" rows="12" placeholder="Start writing..."></textarea>
+      <div id="status"></div>
+    </div>
+    <div id="rightbar">
+      <label>Font</label>
+      <select id="font-family">
+        <option value="Inter">Inter</option>
+        <option value="Courier New">Courier New</option>
+        <option value="Arial">Arial</option>
+      </select>
+      <label>Size</label>
+      <input id="font-size" type="range" min="12" max="32" value="16" />
+      <label>Text Color</label>
+      <input type="color" id="text-color" />
+      <button id="dark-mode-toggle">🌙 Dark Mode</button>
     </div>
   </div>
 
-  <script type=\"module\">
-    import { initializeApp } from \"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js\";
-    import { getFirestore, collection, addDoc, doc, getDocs, setDoc, getDoc } from \"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js\";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from \"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js\";
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
+  <script>
     const firebaseConfig = {
-      apiKey: \"AIzaSyB7FM1PA0TwtBuHjnXDXVUOkZUnfU1dw3M\",
-      authDomain: \"website-54b55.firebaseapp.com\",
-      projectId: \"website-54b55\",
-      storageBucket: \"website-54b55.firebasestorage.app\",
-      messagingSenderId: \"1077740411110\",
-      appId: \"1:1077740411110:web:2c1d382199cbb445108327\",
-      measurementId: \"G-JQSBZY3CH8\"
+      apiKey: "AIzaSyB7FM1PA0TwtBuHjnXDXVUOkZUnfU1dw3M",
+      authDomain: "website-54b55.firebaseapp.com",
+      projectId: "website-54b55",
+      storageBucket: "website-54b55.appspot.com",
+      messagingSenderId: "1077740411110",
+      appId: "1:1077740411110:web:2c1d382199cbb445108327",
+      measurementId: "G-JQSBZY3CH8"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-    let currentUserEmail = null;
+    const loginScreen = document.getElementById("login-screen");
+    const app = document.getElementById("app");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const loginBtn = document.getElementById("login-btn");
+    const loginError = document.getElementById("login-error");
+    const logoutBtn = document.getElementById("logout");
+
+    const noteTitle = document.getElementById("note-title");
+    const noteContent = document.getElementById("note-content");
+    const addNoteBtn = document.getElementById("add-note");
+    const notesList = document.getElementById("notes-list");
+    const fontFamily = document.getElementById("font-family");
+    const fontSize = document.getElementById("font-size");
+    const textColor = document.getElementById("text-color");
+    const saveStatus = document.getElementById("status");
+    const darkToggle = document.getElementById("dark-mode-toggle");
+
+    let currentUser = null;
     let currentNoteId = null;
+    let unsubscribe = null;
+    let saveTimeout;
 
-    function toggleDarkMode() {
-      document.body.classList.toggle(\"dark\");
-    }
+    loginBtn.onclick = async () => {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+      if (!email || !password) return;
 
-    async function login() {
-      const email = document.getElementById(\"email\").value;
-      const password = document.getElementById(\"password\").value;
       try {
-        await signInWithEmailAndPassword(auth, email, password);
-      } catch (err) {
-        document.getElementById(\"login-message\").textContent = err.message;
+        await auth.signInWithEmailAndPassword(email, password);
+      } catch (e) {
+        if (e.code === 'auth/user-not-found') {
+          try {
+            await auth.createUserWithEmailAndPassword(email, password);
+          } catch (err) {
+            loginError.textContent = err.message;
+          }
+        } else {
+          loginError.textContent = e.message;
+        }
       }
-    }
+    };
 
-    async function signup() {
-      const email = document.getElementById(\"email\").value;
-      const password = document.getElementById(\"password\").value;
-      try {
-        await createUserWithEmailAndPassword(auth, email, password);
-      } catch (err) {
-        document.getElementById(\"login-message\").textContent = err.message;
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        currentUser = user;
+        loginScreen.classList.add('hidden');
+        app.classList.remove('hidden');
+        startListening();
+      } else {
+        currentUser = null;
+        loginScreen.classList.remove('hidden');
+        app.classList.add('hidden');
+        if (unsubscribe) unsubscribe();
       }
+    });
+
+    logoutBtn.onclick = () => auth.signOut();
+
+    addNoteBtn.onclick = async () => {
+      const docRef = await db.collection("notes").add({
+        userId: currentUser.uid,
+        title: "",
+        content: "",
+        fontFamily: "Inter",
+        fontSize: 16,
+        textColor: "#000000",
+        updated: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+      currentNoteId = docRef.id;
+      noteTitle.value = "";
+      noteContent.value = "";
+      renderNotes();
+    };
+
+    function startListening() {
+      unsubscribe = db.collection("notes")
+        .where("userId", "==", currentUser.uid)
+        .orderBy("updated", "desc")
+        .onSnapshot(snapshot => {
+          const notes = [];
+          snapshot.forEach(doc => notes.push({ id: doc.id, ...doc.data() }));
+          renderNotes(notes);
+        });
     }
 
-    async function logout() {
-      await signOut(auth);
-      location.reload();
-    }
-
-    function updateStyle() {
-      const size = document.getElementById(\"font-size\").value;
-      const color = document.getElementById(\"font-color\").value;
-      const textarea = document.getElementById(\"note-content\");
-      textarea.style.fontSize = size;
-      textarea.style.color = color;
-    }
-
-    async function saveNote() {
-      if (!currentNoteId || !currentUserEmail) return;
-      const content = document.getElementById(\"note-content\").value;
-      await setDoc(doc(db, \"users\", currentUserEmail, \"notes\", currentNoteId), { content });
-    }
-
-    async function loadNotes() {
-      const notesList = document.getElementById(\"notes-list\");
-      notesList.innerHTML = \"\";
-      const querySnapshot = await getDocs(collection(db, \"users\", currentUserEmail, \"notes\"));
-      querySnapshot.forEach(docSnap => {
-        const btn = document.createElement(\"button\");
-        btn.textContent = docSnap.id;
-        btn.onclick = () => openNote(docSnap.id);
-        notesList.appendChild(btn);
+    function renderNotes(notes) {
+      notesList.innerHTML = "";
+      notes.forEach(note => {
+        const div = document.createElement("div");
+        div.className = "note-item";
+        if (note.id === currentNoteId) div.classList.add("selected");
+        div.textContent = note.title || "(Untitled)";
+        div.onclick = () => {
+          currentNoteId = note.id;
+          noteTitle.value = note.title;
+          noteContent.value = note.content;
+          fontFamily.value = note.fontFamily || "Inter";
+          fontSize.value = note.fontSize || 16;
+          textColor.value = note.textColor || "#000000";
+          applyStyles();
+        };
+        notesList.appendChild(div);
       });
     }
 
-    async function createNote() {
-      const id = `Note-${Date.now()}`;
-      await setDoc(doc(db, \"users\", currentUserEmail, \"notes\", id), { content: \"\" });
-      loadNotes();
+    function saveNote() {
+      if (!currentNoteId) return;
+      db.collection("notes").doc(currentNoteId).update({
+        title: noteTitle.value,
+        content: noteContent.value,
+        fontFamily: fontFamily.value,
+        fontSize: parseInt(fontSize.value),
+        textColor: textColor.value,
+        updated: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+      saveStatus.textContent = "Saved!";
     }
 
-    async function openNote(noteId) {
-      currentNoteId = noteId;
-      const docSnap = await getDoc(doc(db, \"users\", currentUserEmail, \"notes\", noteId));
-      document.getElementById(\"note-content\").value = docSnap.data().content || \"\";
+    function debounceSave() {
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(saveNote, 1000);
     }
 
-    onAuthStateChanged(auth, user => {
-      if (user) {
-        currentUserEmail = user.email;
-        document.getElementById(\"login-screen\").style.display = \"none\";
-        loadNotes();
-      } else {
-        document.getElementById(\"login-screen\").style.display = \"flex\";
-      }
+    function applyStyles() {
+      noteTitle.style.fontFamily = fontFamily.value;
+      noteTitle.style.fontSize = fontSize.value + "px";
+      noteTitle.style.color = textColor.value;
+      noteContent.style.fontFamily = fontFamily.value;
+      noteContent.style.fontSize = fontSize.value + "px";
+      noteContent.style.color = textColor.value;
+    }
+
+    [noteTitle, noteContent].forEach(el => el.addEventListener('input', debounceSave));
+    [fontFamily, fontSize, textColor].forEach(el => {
+      el.addEventListener('input', () => {
+        applyStyles();
+        debounceSave();
+      });
     });
+
+    darkToggle.onclick = () => {
+      const isDark = document.body.classList.toggle('dark');
+      localStorage.setItem('n4s-dark', isDark);
+    };
+
+    if (localStorage.getItem('n4s-dark') === 'true') {
+      document.body.classList.add('dark');
+    }
+
   </script>
 </body>
 </html>
